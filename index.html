@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.11.4/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.11.4/dist/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lottie-web@5.10.1/build/player/lottie.min.js"></script>
     <style>
         :root {
@@ -266,6 +267,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
+            place-items: center;
             margin-top: 3rem;
         }
 
@@ -276,6 +278,8 @@
             padding: 2rem;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
+            max-width: 350px;
+            width: 100%;
         }
 
         .infrastructure-card:hover {
@@ -305,6 +309,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
             gap: 3rem;
+            place-items: center;
             margin-top: 3rem;
         }
 
@@ -313,6 +318,8 @@
             border-radius: 8px;
             padding: 2rem;
             backdrop-filter: blur(10px);
+            max-width: 450px;
+            width: 100%;
         }
 
         .card-header {
@@ -411,6 +418,25 @@
             fill: var(--graphite);
         }
 
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes draw {
+            to { stroke-dashoffset: 0; }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .animate-line {
+            animation: draw 1.5s ease-out forwards;
+        }
+
         /* Responsive */
         @media (max-width: 992px) {
             section {
@@ -467,24 +493,6 @@
                 width: 100%;
                 justify-content: center;
             }
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes draw {
-            to { stroke-dashoffset: 0; }
-        }
-
-        .fade-in {
-            animation: fadeIn 1s ease forwards;
-        }
-
-        .animate-line {
-            animation: draw 1.5s ease-out forwards;
         }
     </style>
 </head>
@@ -635,7 +643,7 @@
                 <div class="potential-card fade-in">
                     <div class="card-header">
                         <svg viewBox="0 0 24 24" class="card-icon-lg">
-                            <path d="M17 8h2c1.1 0 2 .9 2 2v9c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h9v2H5v14h14v-9zM12 9l-1.4 1.4L16.2 14H4v2h12.2l-5.6 5.6L12 23l8-8-8-8z"/>
+                            <path d="M17 8h2c1.1 0 2 .9 2 2v9c0 1.1.9 2 2 2H5c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h9v2H5v14h14v-9zM12 9l-1.4 1.4L16.2 14H4v2h12.2l-5.6 5.6L12 23l8-8-8-8z"/>
                         </svg>
                         <h3>Газоснабжение</h3>
                     </div>
@@ -678,148 +686,6 @@
         </div>
     </section>
 
-    <script>
-        // Three.js Scene Setup
-        function initWebGL() {
-            const container = document.getElementById('webgl-container');
-            
-            // Check if WebGL is supported
-            if (!WEBGL.isWebGLAvailable()) {
-                const warning = WEBGL.getWebGLErrorMessage();
-                container.appendChild(warning);
-                return;
-            }
-
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ 
-                antialias: true, 
-                alpha: true,
-                powerPreference: "high-performance"
-            });
-            
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            container.appendChild(renderer.domElement);
-            
-            // Industrial-style geometry
-            const createIndustrialElement = () => {
-                const height = Math.random() * 3 + 1;
-                const geometry = new THREE.BoxGeometry(1, height, 1);
-                const edges = new THREE.EdgesGeometry(geometry);
-                const line = new THREE.LineSegments(
-                    edges,
-                    new THREE.LineBasicMaterial({ color: 0x555555 })
-                );
-                
-                line.position.x = (Math.random() - 0.5) * 20;
-                line.position.y = height / 2;
-                line.position.z = (Math.random() - 0.5) * 20;
-                
-                return line;
-            };
-            
-            // Create multiple industrial elements
-            for (let i = 0; i < 15; i++) {
-                scene.add(createIndustrialElement());
-            }
-            
-            // Add main structure
-            const mainGeometry = new THREE.BoxGeometry(8, 3, 8);
-            const mainEdges = new THREE.EdgesGeometry(mainGeometry);
-            const mainStructure = new THREE.LineSegments(
-                mainEdges,
-                new THREE.LineBasicMaterial({ color: 0x888888 })
-            );
-            scene.add(mainStructure);
-            
-            camera.position.z = 15;
-            camera.position.y = 5;
-            
-            // Animation loop
-            const animate = () => {
-                requestAnimationFrame(animate);
-                
-                scene.children.forEach((obj, index) => {
-                    if (index > 0) { // Skip the main structure
-                        obj.rotation.y += 0.001 * index;
-                    }
-                });
-                
-                renderer.render(scene, camera);
-            };
-            
-            animate();
-            
-            // Handle resize
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-        }
-
-        // Initialize animations when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initialize WebGL background
-            initWebGL();
-            
-            // Animate elements on scroll
-            const animateOnScroll = () => {
-                const elements = document.querySelectorAll('.fade-in');
-                
-                elements.forEach(element => {
-                    const elementPosition = element.getBoundingClientRect().top;
-                    const screenPosition = window.innerHeight / 1.3;
-                    
-                    if (elementPosition < screenPosition) {
-                        element.style.opacity = '1';
-                        element.style.transform = 'translateY(0)';
-                    }
-                });
-            };
-            
-            // Initial check
-            animateOnScroll();
-            
-            // Check on scroll
-            window.addEventListener('scroll', animateOnScroll);
-            
-            // Animate energy meter
-            const meterFill = document.querySelector('.meter-fill');
-            if (meterFill) {
-                setTimeout(() => {
-                    meterFill.style.width = '100%';
-                }, 500);
-            }
-            
-            // Smooth scrolling for navigation
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    const targetId = this.getAttribute('href');
-                    const targetElement = document.querySelector(targetId);
-                    
-                    if (targetElement) {
-                        window.scrollTo({
-                            top: targetElement.offsetTop - 80,
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-            });
-            
-            // Contact form submission
-            const contactButton = document.querySelector('.contact-button');
-            if (contactButton) {
-                contactButton.addEventListener('click', () => {
-                    // Here you would normally send the request
-                    // For demo purposes, we'll just show an alert
-                    alert('Запрос на техническую документацию отправлен. Мы свяжемся с вами в ближайшее время.');
-                });
-            }
-        });
-    </script>
+    <script src="/js/main.js"></script>
 </body>
 </html>
