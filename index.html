@@ -1,169 +1,174 @@
-// Three.js Scene Setup
-function initWebGL() {
-    const container = document.getElementById('webgl-container');
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechBase360 - Производственно-логистический комплекс</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Neue+Haas+Grotesk:wght@400;700&display=swap">
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.11.4/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lottie-web@5.10.1/build/player/lottie.min.js"></script>
+</head>
+<body>
+    <!-- WebGL Background -->
+    <div id="webgl-container"></div>
     
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    container.appendChild(renderer.domElement);
-    
-    // Industrial-style geometry
-    const geometry = new THREE.BoxGeometry(10, 10, 10);
-    const edges = new THREE.EdgesGeometry(geometry);
-    const line = new THREE.LineSegments(
-        edges,
-        new THREE.LineBasicMaterial({ color: 0x555555 })
-    );
-    scene.add(line);
-    
-    // Add multiple industrial elements
-    for (let i = 0; i < 20; i++) {
-        const box = new THREE.Mesh(
-            new THREE.BoxGeometry(1, Math.random() * 3 + 1, 1),
-            new THREE.MeshBasicMaterial({ 
-                color: 0x333333,
-                wireframe: true
-            })
-        );
-        box.position.x = (Math.random() - 0.5) * 20;
-        box.position.y = (Math.random() - 0.5) * 10;
-        box.position.z = (Math.random() - 0.5) * 20;
-        scene.add(box);
-    }
-    
-    camera.position.z = 15;
-    
-    // Animation loop
-    function animate() {
-        requestAnimationFrame(animate);
-        line.rotation.x += 0.001;
-        line.rotation.y += 0.002;
-        renderer.render(scene, camera);
-    }
-    
-    animate();
-    
-    // Handle resize
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-}
+    <!-- Navigation -->
+    <nav class="industrial-nav">
+        <div class="nav-logo">
+            <span class="logo-text">TechBase360</span>
+            <span class="logo-tm">™</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#location">Локация</a></li>
+            <li><a href="#infrastructure">Инфраструктура</a></li>
+            <li><a href="#potential">Потенциал</a></li>
+            <li><a href="#contact" class="cta-button">Контакты</a></li>
+        </ul>
+    </nav>
 
-// Lottie Animations
-function initLottieAnimations() {
-    // Production icon animation
-    const productionAnim = lottie.loadAnimation({
-        container: document.getElementById('production-icon'),
-        renderer: 'svg',
-        loop: true,
-        autoplay: true,
-        path: 'animations/production.json'
-    });
-    
-    // Service icon animation
-    const serviceAnim = lottie.loadAnimation({
-        container: document.getElementById('service-icon'),
-        renderer: 'svg',
-        loop: true,
-        autoplay: true,
-        path: 'animations/service.json'
-    });
-    
-    // Assembly icon animation
-    const assemblyAnim = lottie.loadAnimation({
-        container: document.getElementById('assembly-icon'),
-        renderer: 'svg',
-        loop: true,
-        autoplay: true,
-        path: 'animations/assembly.json'
-    });
-}
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="title-line">TechBase360</span>
+                <span class="title-line">Производственно-логистический комплекс</span>
+            </h1>
+            <p class="hero-subtitle">Готовая инфраструктура для бизнеса 24/7/365</p>
+            <div class="hero-scroll-indicator">
+                <div class="scroll-line"></div>
+            </div>
+        </div>
+        <div class="hero-address">
+            <svg class="location-icon" viewBox="0 0 24 24">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            </svg>
+            <span>Московская обл., г. Воскресенск, ул. Центральная, с36А</span>
+        </div>
+    </section>
 
-// GSAP Animations
-function initScrollAnimations() {
-    // Animate sections on scroll
-    gsap.utils.toArray('section').forEach(section => {
-        gsap.from(section, {
-            opacity: 0,
-            y: 50,
-            duration: 1,
-            scrollTrigger: {
-                trigger: section,
-                start: 'top 80%',
-                toggleActions: 'play none none none'
-            }
-        });
-    });
-    
-    // Animate energy meter fill
-    gsap.to('.meter-fill', {
-        width: '100%',
-        scrollTrigger: {
-            trigger: '.energy-widget',
-            start: 'top 80%',
-            end: 'top 20%',
-            scrub: 1
-        }
-    });
-    
-    // Animate node connections
-    gsap.from('.connection-line', {
-        strokeDashoffset: 1000,
-        duration: 2,
-        ease: 'power2.inOut',
-        scrollTrigger: {
-            trigger: '.ecosystem-map',
-            start: 'top 80%'
-        }
-    });
-}
+    <!-- Ecosystem Section -->
+    <section id="location" class="ecosystem-section">
+        <div class="section-header">
+            <h2>Прямой доступ к лидерам рынка</h2>
+            <p>Ключевой запрос: склад для маркетплейса. Факт: Склад Wildberries — 10 км.</p>
+        </div>
+        <div class="ecosystem-map">
+            <!-- Interactive SVG Map -->
+            <svg class="ecosystem-svg" viewBox="0 0 800 600">
+                <!-- Center Node -->
+                <circle class="node center-node" cx="400" cy="300" r="40" fill="#FF8C00"/>
+                <text class="node-label" x="400" y="360">TechBase360</text>
+                
+                <!-- Connection Nodes -->
+                <g class="connection-group">
+                    <line class="connection-line" x1="400" y1="300" x2="200" y2="150" stroke="#FF8C00" stroke-width="2"/>
+                    <circle class="node" cx="200" cy="150" r="30" fill="#34C759"/>
+                    <text class="node-label" x="200" y="200">Wildberries (10 км)</text>
+                </g>
+                
+                <!-- Additional nodes would go here -->
+            </svg>
+        </div>
+    </section>
 
-// Smooth scrolling for navigation
-function initSmoothScrolling() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
-        });
-    });
-}
+    <!-- Infrastructure Section -->
+    <section id="infrastructure" class="infrastructure-section">
+        <div class="section-header">
+            <h2>Капитальные боксы: производство и сервис</h2>
+            <p>Три изолированных бокса (240 м²) с различным назначением</p>
+        </div>
+        
+        <div class="infrastructure-grid">
+            <div class="infrastructure-card">
+                <div class="card-icon" id="production-icon"></div>
+                <h3>Производственный цех</h3>
+                <p>Высота потолков 4.5 м, нагрузка на пол 5 т/м²</p>
+            </div>
+            
+            <div class="infrastructure-card">
+                <div class="card-icon" id="service-icon"></div>
+                <h3>База СТО</h3>
+                <p>Сквозной проезд для спецтехники</p>
+            </div>
+            
+            <div class="infrastructure-card">
+                <div class="card-icon" id="assembly-icon"></div>
+                <h3>Сборочная линия</h3>
+                <p>Оптимизированная организация пространства</p>
+            </div>
+        </div>
+    </section>
 
-// Initialize everything when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    initWebGL();
-    initLottieAnimations();
-    initScrollAnimations();
-    initSmoothScrolling();
-    
-    // Animate hero title
-    gsap.from('.title-line', {
-        y: 50,
-        opacity: 0,
-        stagger: 0.2,
-        duration: 1,
-        ease: 'power3.out'
-    });
-    
-    // Animate hero subtitle
-    gsap.from('.hero-subtitle', {
-        y: 30,
-        opacity: 0,
-        delay: 0.6,
-        duration: 0.8,
-        ease: 'power2.out'
-    });
-    
-    // Animate scroll indicator
-    gsap.from('.scroll-line', {
-        scaleY: 0,
-        transformOrigin: 'top',
-        delay: 1.2,
-        duration: 1,
-        ease: 'power2.out'
-    });
-});
+    <!-- Potential Section -->
+    <section id="potential" class="potential-section">
+        <div class="section-header">
+            <h2>Энергетический и ресурсный потенциал</h2>
+            <p>Мощность до 50 МВт по запросу • Гарантированное подключение</p>
+        </div>
+        
+        <div class="potential-widgets">
+            <div class="energy-widget">
+                <div class="widget-header">
+                    <svg class="widget-icon" viewBox="0 0 24 24">
+                        <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+                    </svg>
+                    <h3>Электроснабжение</h3>
+                </div>
+                <div class="energy-meter">
+                    <div class="meter-track"></div>
+                    <div class="meter-fill"></div>
+                    <div class="meter-labels">
+                        <span>Базовое подключение</span>
+                        <span>Масштабирование по ТУ +</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="gas-widget">
+                <div class="widget-header">
+                    <svg class="widget-icon" viewBox="0 0 24 24">
+                        <path d="M17 8h2c1.1 0 2 .9 2 2v9c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h9v2H5v14h14v-9zM12 9l-1.4 1.4L16.2 14H4v2h12.2l-5.6 5.6L12 23l8-8-8-8z"/>
+                    </svg>
+                    <h3>Газоснабжение</h3>
+                </div>
+                <p>Доступ к природному газу • Техническая возможность подключения</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="contact-content">
+            <h2>TechBase360<sup>®</sup></h2>
+            <p class="contact-subtitle">Прямая продажа от собственника</p>
+            
+            <div class="contact-info">
+                <div class="contact-item">
+                    <svg class="contact-icon" viewBox="0 0 24 24">
+                        <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
+                    </svg>
+                    <span>+7 (495) 294-99-22</span>
+                </div>
+                
+                <div class="contact-item">
+                    <svg class="contact-icon" viewBox="0 0 24 24">
+                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                    </svg>
+                    <span>info@vskbase.ru</span>
+                </div>
+            </div>
+            
+            <button class="contact-button">
+                Запросить техническую документацию
+                <svg class="button-arrow" viewBox="0 0 24 24">
+                    <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+                </svg>
+            </button>
+        </div>
+    </section>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
